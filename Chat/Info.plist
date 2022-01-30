@@ -27,9 +27,14 @@
 		<key>UIColorName</key>
 		<string>maroon</string>
 		<key>UIImageName</key>
-		<string>logo</string>
+		<string>Logo</string>
 		<key>UIImageRespectsSafeAreaInsets</key>
 		<true/>
+		<key>UINavigationBar</key>
+		<dict>
+			<key>UIImageName</key>
+			<string></string>
+		</dict>
 		<key>UILaunchScreen</key>
 		<dict/>
 	</dict>

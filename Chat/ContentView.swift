@@ -39,7 +39,7 @@ struct ContentView: View {
                                         Text("Login")
                                             .fontWeight(.bold)
                                             .padding(.trailing, 25)
-                                            .font(.system(size: 24))
+                                            .font(.system(size: 22))
                                     }
                                     .foregroundColor(Color.red)
                                     .frame(width: 250, height: 50, alignment: .center)
