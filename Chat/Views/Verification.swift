@@ -127,7 +127,7 @@ struct Verification: View {
                                             return
                                                 
                                         }
-                                        checkUser { (exists, user,uid,pic) in
+                                        checkUser { (exists, user,uid,pic,about) in
                                             
                                             if exists{
                                                 
@@ -135,10 +135,12 @@ struct Verification: View {
                                                 
                                                 UserDefaults.standard.set(user, forKey: "Username")
                                                
+                                                UserDefaults.standard.set(about, forKey: "About")
+                                                
+                                                UserDefaults.standard.set(pic, forKey: "Profilepic")
+
                                                 UserDefaults.standard.set(uid, forKey: "uid")
                                                
-                                                UserDefaults.standard.set(pic, forKey: "Profilepic")
-                                                
                                                 NotificationCenter.default.post(name: NSNotification.Name("statusChange"), object: nil)
                                                 
                                                 withAnimation{self.status = true}

@@ -8,7 +8,7 @@
 import Foundation
 import Firebase
 
-func checkUser(completion: @escaping (Bool,String,String,String)->Void){
+func checkUser(completion: @escaping (Bool,String,String,String,String)->Void){
      
     let db = Firestore.firestore()
     
@@ -24,12 +24,12 @@ func checkUser(completion: @escaping (Bool,String,String,String)->Void){
             
             if i.documentID == Auth.auth().currentUser?.uid{
                 
-                completion(true,i.get("Username") as! String,i.documentID,i.get("ProfilePic") as! String)
+                completion(true,i.get("Username") as! String,i.documentID,i.get("ProfilePic") as! String,i.get("About") as! String)
                 return
             }
         }
         
-        completion(false,"","","")
+        completion(false,"No Username","No Unique Identification","No Profile Pic","No About")
     }
     
 }

@@ -105,7 +105,7 @@ struct AccountCreation : View {
                                 if self.name != "" && self.about != "" && self.imagedata.count != 0{
                                     
                                     self.loading.toggle()
-                                    CreateUser(name: self.name, about: self.about, imagedata: self.imagedata) { (status) in
+                                    CreateUser(name: name, about: about, imagedata: imagedata) { (status) in
                                         
                                         if status{
 
@@ -113,6 +113,7 @@ struct AccountCreation : View {
 
                                         }
                                         print("success @updating Profile")
+                                        getCurrentUser()
                                         withAnimation{self.status = true}
 
                                     }
@@ -124,7 +125,7 @@ struct AccountCreation : View {
                             }) {
                                 
 
-                            Text("Update Profile").frame(width: UIScreen.main.bounds.width - 50,height: 50)
+                            Text("Save Profile").frame(width: UIScreen.main.bounds.width - 50,height: 50)
                                 
                             }
                             .frame(width: UIScreen.main.bounds.width - 100, alignment: .center)

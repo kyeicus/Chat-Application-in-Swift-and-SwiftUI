@@ -27,16 +27,7 @@ struct Home: View {
     
     var body: some View {
         TabView{
-            Hometab()
-                .tabItem{
-                    Image(systemName: "house.fill")
-                    Text("Home")
-                }
-            Searchtab()
-                .tabItem{
-                    Image(systemName: "magnifyingglass")
-                    Text("Search")
-                }
+           
             Chat_tab()
                 .tabItem{
                     Image(systemName: "message")
@@ -178,15 +169,20 @@ struct Profile : View{
     @State var name = ""
     @State var about = ""
     @State var loading = false
+    @State var creation = false
     @State var picker = false
     @State var imagedata : Data = .init(count: 0)
     @State var Username = UserDefaults.standard.value(forKey: "Username") as! String
     @State var About = UserDefaults.standard.value(forKey: "About") as! String
     @State var uid = UserDefaults.standard.value(forKey: "uid") as! String
+    
+
+
+    
 
     @State var imageURL = URL(string: "")
+    
     var body: some View{
-            
         ZStack(alignment: .leading){
             Image("bg")
                 .resizable()
@@ -225,7 +221,7 @@ struct Profile : View{
                                 
                             }
                         }
-                        Text("Username")
+                        Text("")
                             .font(.body)
                             .fontWeight(.thin)
                             .foregroundColor(.black)
@@ -235,7 +231,6 @@ struct Profile : View{
                             .foregroundColor(.black)
                             .frame(width:280, height: 45, alignment: .leading)
                             .overlay(Rectangle().frame(height: 2).padding(.top, 30))
-
                             
 
                         Text("About")
@@ -250,14 +245,6 @@ struct Profile : View{
                             .frame(width: 280 ,height: 50, alignment: .leading)
                             .overlay(Rectangle().frame(height: 2).padding(.top, 30))
 
-                        if self.loading{
-                            HStack{
-                                Spacer()
-                                Loading()
-                                Spacer()
-                            }
-                        }
-                        else{
                             
                             Button(action: {
                                 
@@ -271,6 +258,7 @@ struct Profile : View{
                                         }
                                         
                                         print("success @updating Profile")
+                                        getCurrentUser()
                                       
 
                                     }
@@ -292,25 +280,27 @@ struct Profile : View{
                             .shadow(radius: 2.0)
                             .padding(.top,25)
                             
-                        }
+                            
+                        
                         
                     }
                     .padding(10)
-                    .sheet(isPresented: self.$picker, content: {
-                        
-                        ImagePicker(picker: self.$picker, imagedata: self.$imagedata)
-                    })
+                  
             }
             .padding(.leading,130)
             .edgesIgnoringSafeArea(.all)
             .frame(width: UIScreen.main.bounds.width - 50, height: 450)
-
+            
 
 
             
             
         
         }
+//        .sheet(isPresented: self.$creation) {
+//
+//            AccountCreation(show: self.$creation)
+//        }
         .edgesIgnoringSafeArea(.all)
     
     
@@ -532,7 +522,7 @@ struct ChatBubble : Shape {
     
     func path(in rect: CGRect) -> Path {
             
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: [.topLeft,.topRight,mymsg ? .bottomLeft : .bottomRight], cornerRadii: CGSize(width: 15, height: 15))
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: [.topLeft,.topRight,mymsg ? .bottomLeft : .bottomRight], cornerRadii: CGSize(width: 15, height: 12))
         
         return Path(path.cgPath)
     }
@@ -634,6 +624,7 @@ func updateDB(uid: String,msg: String,date: Date){
 }
 
 func getCurrentUser() {
+    @State var Username : Any
     let db = Firestore.firestore()
     if let userId = Auth.auth().currentUser?.uid {
         let collectionRef = db.collection("Users")
@@ -644,14 +635,29 @@ func getCurrentUser() {
                 return
             }
             if let doc = document {
-                let username = doc.get("Userame") ?? "No Name"
+                let username = doc.get("Username") ?? "No Name"
                 let profilepic = doc.get("ProfilePic") ?? "No Picture"
                 let about = doc.get("About") ?? "No About"
                 print("Hey, \(username) welcome!")
                 print("Hey, is this your about? : \(about)")
                 print("Hey, kindly crosscheck your photo url: \(profilepic)")
                 
+                UserDefaults.standard.set(true, forKey: "status")
+                
+                UserDefaults.standard.set(username, forKey: "Username")
+                
+                UserDefaults.standard.set(about, forKey: "About")
+
+                
+                UserDefaults.standard.set("\(profilepic)", forKey: "Profilepic")
+                
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name("statusChange"), object: nil)
+                }
             }
+            
         })
     }
 }
@@ -703,6 +709,40 @@ class getAllUsers : ObservableObject{
         }
     }
 }
+
+class getCurrentUserDetails : ObservableObject{
+    
+    @Published var empty = false
+    private var db = Firestore.firestore()
+    var userId = Auth.auth().currentUser?.uid
+    
+    init() {
+        if (userId != nil) {
+            let collectionRef = db.collection("Users")
+            let thisUserDoc = collectionRef.document(userId!)
+            thisUserDoc.getDocument(completion: { document, error in
+                if let err = error {
+                    print(err.localizedDescription)
+                    return
+                }
+                 if let doc = document {
+                    let username = doc.get("Username") ?? "No Name"
+                    let profilepic = doc.get("ProfilePic") ?? "No Picture"
+                    let about = doc.get("About") ?? "No About"
+                    print("Hey, \(username) welcome!")
+                    print("Hey, is this your about? : \(about)")
+                    print("Hey, kindly crosscheck your photo url: \(profilepic)")
+                    
+                    
+         
+                }
+                
+                
+            })
+        }
+    }
+}
+
 
 struct UserCellView : View {
     
